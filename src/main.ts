@@ -10,6 +10,7 @@ class Particles {
   mouseX!: number;
   mouseY!: number;
   clock!: THREE.Clock;
+  isMobile!: boolean;
 
   constructor() {
     this.width = window.innerWidth;
@@ -17,6 +18,7 @@ class Particles {
     this.clock = new THREE.Clock();
     this.mouseX = 1;
     this.mouseY = 1;
+    this.isMobile = window.innerWidth <= 748;
 
     this.scene = new THREE.Scene();
 
@@ -57,8 +59,10 @@ class Particles {
     });
 
     window.addEventListener("mousemove", (event) => {
-      this.mouseX = event.clientX;
-      this.mouseY = event.clientY;
+      if (!this.isMobile) {
+        this.mouseX = event.clientX;
+        this.mouseY = event.clientY;
+      }
     });
 
     return new THREE.Points(geometry, material);
@@ -69,9 +73,11 @@ class Particles {
     this.height = window.innerHeight;
 
     this.points.rotation.x =
-      this.mouseY * (this.clock.getElapsedTime() * 0.00005);
+      this.mouseY *
+      (this.clock.getElapsedTime() * (this.isMobile ? 0.05 : 0.00008));
     this.points.rotation.y =
-      this.mouseX * (this.clock.getElapsedTime() * 0.00005);
+      this.mouseX *
+      (this.clock.getElapsedTime() * (this.isMobile ? 0.05 : 0.00008));
 
     requestAnimationFrame(this.animate);
     this.renderer.setSize(this.width, this.height);
