@@ -9,10 +9,14 @@ class Particles {
   points!: THREE.Points;
   mouseX!: number;
   mouseY!: number;
+  clock!: THREE.Clock;
 
   constructor() {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+    this.clock = new THREE.Clock();
+    this.mouseX = 1;
+    this.mouseY = 1;
 
     this.scene = new THREE.Scene();
 
@@ -36,11 +40,11 @@ class Particles {
 
   createPoints(): THREE.Points {
     const geometry = new THREE.BufferGeometry();
-    const particlesCount = 100;
+    const particlesCount = 5000;
     const vertices = new Float32Array(particlesCount * 3);
 
     for (let i = 0; i < particlesCount * 3; i++) {
-      vertices[i] = (Math.random() - 0.5) * 20;
+      vertices[i] = (Math.random() - 0.5) * 500;
     }
 
     geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
@@ -55,8 +59,6 @@ class Particles {
     window.addEventListener("mousemove", (event) => {
       this.mouseX = event.clientX;
       this.mouseY = event.clientY;
-
-      console.log(this.mouseX, this.mouseY);
     });
 
     return new THREE.Points(geometry, material);
@@ -65,6 +67,11 @@ class Particles {
   animate = (): void => {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+
+    this.points.rotation.x =
+      this.mouseY * (this.clock.getElapsedTime() * 0.00005);
+    this.points.rotation.y =
+      this.mouseX * (this.clock.getElapsedTime() * 0.00005);
 
     requestAnimationFrame(this.animate);
     this.renderer.setSize(this.width, this.height);
