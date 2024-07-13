@@ -1,24 +1,77 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.ts'
+import * as THREE from "three";
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+class Particles {
+  camera!: THREE.PerspectiveCamera;
+  width!: number;
+  height!: number;
+  renderer: THREE.WebGLRenderer;
+  scene: THREE.Scene;
+  points!: THREE.Points;
+  mouseX!: number;
+  mouseY!: number;
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+  constructor() {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+
+    this.scene = new THREE.Scene();
+
+    this.camera = new THREE.PerspectiveCamera(
+      75,
+      this.width / this.height,
+      0.1,
+      100
+    );
+    this.camera.position.z = 5;
+
+    this.points = this.createPoints();
+    this.scene.add(this.points);
+
+    this.renderer = new THREE.WebGLRenderer();
+    this.renderer.setSize(this.width, this.height);
+
+    document.body.appendChild(this.renderer.domElement);
+    this.animate();
+  }
+
+  createPoints(): THREE.Points {
+    const geometry = new THREE.BufferGeometry();
+    const particlesCount = 100;
+    const vertices = new Float32Array(particlesCount * 3);
+
+    for (let i = 0; i < particlesCount * 3; i++) {
+      vertices[i] = (Math.random() - 0.5) * 20;
+    }
+
+    geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+
+    const material = new THREE.PointsMaterial({
+      color: 0xf5f5f5,
+      size: 0.05,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+    });
+
+    window.addEventListener("mousemove", (event) => {
+      this.mouseX = event.clientX;
+      this.mouseY = event.clientY;
+
+      console.log(this.mouseX, this.mouseY);
+    });
+
+    return new THREE.Points(geometry, material);
+  }
+
+  animate = (): void => {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+
+    requestAnimationFrame(this.animate);
+    this.renderer.setSize(this.width, this.height);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.render(this.scene, this.camera);
+    this.renderer.setClearColor(new THREE.Color(0x161616));
+  };
+}
+
+new Particles();
