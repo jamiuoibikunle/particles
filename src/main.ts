@@ -72,12 +72,10 @@ class Particles {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
 
-    this.points.rotation.x =
-      this.mouseY *
-      (this.clock.getElapsedTime() * (this.isMobile ? 0.05 : 0.00008));
-    this.points.rotation.y =
-      this.mouseX *
-      (this.clock.getElapsedTime() * (this.isMobile ? 0.05 : 0.00008));
+    const speed =
+      this.clock.getElapsedTime() * (this.isMobile ? 0.05 : 0.00008);
+
+    this.points.rotation.set(this.mouseY * speed, this.mouseY * speed, 1);
 
     requestAnimationFrame(this.animate);
     this.renderer.setSize(this.width, this.height);
