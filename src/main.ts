@@ -51,9 +51,12 @@ class Particles {
 
     geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
 
+    const texture = new THREE.TextureLoader().load("/plus.png");
+
     const material = new THREE.PointsMaterial({
       color: 0xf5f5f5,
-      size: 0.05,
+      map: texture,
+      size: 0.75,
       transparent: true,
       blending: THREE.AdditiveBlending,
     });
